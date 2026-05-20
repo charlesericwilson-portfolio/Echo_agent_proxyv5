@@ -7,7 +7,7 @@ flowchart TD
     C --> D[Tool Extractor checks for session:NAME or COMMAND:]
    
     D -->|Session command found| E[Session Manager]
-    E --> F[Auto-create tmux session if needed]
+    E --> F[Auto-create or reuse tmux session]
     F --> G[Send command to tmux session]
     G --> H[Session Manager starts polling tmux pane]
     H --> I[Wait for new output + markers]

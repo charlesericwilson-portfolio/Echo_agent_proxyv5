@@ -1,3 +1,6 @@
+## Feedback Welcome
+This project is still evolving. If you clone it, try it, or have ideas on how to improve it, **please** leave feedback or suggestions. Even small thoughts help a lot.
+
 # Echo_rust_agent_proxy
 Continuation of [Echo tmux agentv3](https://github.com/charlesericwilson-portfolio/Echo_tmux_agentv3) and adds proxy tool calls, output summarization, and database support.
 ```mermaid

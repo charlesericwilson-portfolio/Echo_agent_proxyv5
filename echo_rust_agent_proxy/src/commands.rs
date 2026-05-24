@@ -50,3 +50,44 @@ pub fn extract_command(response_text: &str) -> Option<String> {
     }
     None
 }
+
+/// Extracts JSON tool call content after "JSON_TOOL:" flag
+pub fn extract_json_tool(response: &str) -> Option<String> {
+    // Find the exact marker (case sensitive)
+    let marker = "JSON_TOOL:";
+
+    if let Some(start) = response.find(marker) {
+        // Get everything after the marker
+        let after_marker = &response[start + marker.len()..];
+
+        // Skip any leading whitespace or newlines
+        let trimmed = after_marker.trim_start();
+
+        // Find the start of the actual JSON (first '{')
+        if let Some(json_start) = trimmed.find('{') {
+            let json_section = &trimmed[json_start..];
+
+            // Count braces to find the end of the JSON object
+            let mut depth = 0;
+            let mut end_pos = 0;
+
+            for (i, c) in json_section.char_indices() {
+                if c == '{' {
+                    depth += 1;
+                } else if c == '}' {
+                    depth -= 1;
+                    if depth == 0 {
+                        end_pos = i + 1;
+                        break;
+                    }
+                }
+            }
+
+            if end_pos > 0 {
+                return Some(json_section[..end_pos].to_string());
+            }
+        }
+    }
+
+    None
+}

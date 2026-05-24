@@ -39,6 +39,7 @@ We kept the proven parts (tmux session management, marker-based output capture, 
 **Added Recently**
 - Sqlite database support for tool logging and better output capture.
 - Added an inner loop to main.rs to allow autonomously chaining tool calls across turns.
+- Added Json function calling support only one tool right now but you can define your tools as needed. But the framework supports all three methods.
 
 ### Current Capabilities (v5)
 - **COMMAND:** method – Stable, one-shot commands, no summarizer
@@ -79,7 +80,7 @@ We kept the proven parts (tmux session management, marker-based output capture, 
 ### Next Planned Steps
 - Further refine summarizer prompt and context stripping
 - Collect more targeted training examples (SESSION vs COMMAND decision making)
-- Test longer msfconsole sessions
+- Switch code around to accept settings from a config.toml for tool definitions, API URL, system prompt, summarizer on off setting, and more.
 
 **Overall Assessment:**  
 v5 is a solid evolution from v3. We reused the best working pieces, added the summarizer and logging cleanly, and kept the code modular. It is **in testing** — functional for daily use and already producing good training data, but not yet perfect for heavy red-team workflows.

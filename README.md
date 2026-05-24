@@ -32,12 +32,42 @@ flowchart TD
 
 **Current Version:** Rust v5 (Python proxy was v4)
 
-This is the active development version of **Echo** — a lightweight, local red-team LLM agent wrapper written in Rust.
+This is the active development version of **Echo** — a lightweight, local LLM agent wrapper written in Rust.
+The goal is to keep the **framework flexible** so the model’s capabilities are the main limitation — not artificial restrictions in the code.
 
+## Current Status (May 2026)
+
+- **Stable**: `COMMAND:` raw text tool execution
+- **Functional**: Persistent `SESSION:NAME` tool execution via tmux with smart output capture
+- **New (In Progress)**: JSON tool calling support (first working tool: `get_current_datetime`)
+- Context auto-summarization 
+- SQLite database logging for all tool calls and summaries
+- Safety deny-list for dangerous commands
+- ShareGPT-style JSONL logging for training data
+
+The agent can fluidly switch between raw text commands, persistent tmux sessions, and structured JSON tool calls depending on what the model decides to use or you can simply instruct the model to use one or more of your choosing. 
+
+## Features
+
+- **Hybrid Tool Calling**: Supports both simple `COMMAND:` / `SESSION:NAME` syntax and modern JSON function calling
+- **Persistent Sessions**: Full tmux integration with named sessions and clean output capture
+- **Flexible Architecture**: Designed so users can add their own tools easily
+- **Local-First**: Works with local models (llama.cpp, Ollama, etc.)
+- **Extensible**: Planning full TOML config support for endpoints, system prompts, and tool definitions
+
+## Roadmap
+
+- Complete JSON tool calling system
+- TOML config file for endpoints, system prompt, and tool definitions (no recompilation needed)
+- More built-in tools (web search, document generation, database queries, etc.)
+- Cleaner terminal UI
+- Better multi-model support (easy switching between local and cloud models)
+- 
 ### What it does
-- Supports **hybrid raw-text tool calling**:
+- Supports **hybrid raw-text tool calling** and Json:
   - `COMMAND: <command>` for simple one-shot shell commands
   - `SESSION:NAME <command>` for persistent tmux sessions (ideal for msfconsole, long-running shells, etc.)
+  - `JSON_TOOL: <Open AI tool format>`
 - Automatic tmux session creation/reuse
 - Marker-based clean output capture (only returns new command output, not full session history)
 - Safety deny list (blocks dangerous commands before execution)
@@ -47,16 +77,8 @@ This is the active development version of **Echo** — a lightweight, local red-
 - Auto summarization of context at 50K tokens.
 - Interrupt generation using ctl+\ end session using ctl+c.
 
-### Current Status – In Active Testing
-- COMMAND method is stable and reliable
-- SESSION method works well for everything except nmap
-- Output capture + summarizer flow is functional
-- Deny list is active
-- Logging is working and generating clean training data
-- Fixed stoping after every tool call model now can chain tools across turns when permitted.
-- For build details and screenshots go to [Doc/progress_log.md](https://github.com/charlesericwilson-portfolio/Echo_rust_agent_proxyv5/blob/main/echo_rust_agent_proxy/Doc/progress_log.md)
 
-Persistent sessions with complex tools (full msfconsole workflows) are still being tuned. Context management and summarizer behavior continue to be refined. Database integration for all tool calls for auditing complete.
+Persistent sessions with complex tools (full msfconsole workflows) are still being tuned. Context management and summarizer behavior continue to be refined. Database integration for all tool calls for auditing complete. Now supports Json function calling.
 
 ### Quick Start
 

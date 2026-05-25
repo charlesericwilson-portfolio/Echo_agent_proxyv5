@@ -43,6 +43,7 @@ The goal is to keep the **framework flexible** so the model’s capabilities are
 - **Stable**: `COMMAND:` raw text tool execution
 - **Functional**: Persistent `SESSION:NAME` tool execution via tmux with smart output capture
 - **New (In Progress)**: JSON tool calling support (first working tool: `get_current_datetime`)
+- Refactored to use config.toml to set endpoints and set your system prompts in text files for the main model and the summarizer model without recompiling.
 - Context auto-summarization 
 - SQLite database logging for all tool calls and summaries
 - Safety deny-list for dangerous commands

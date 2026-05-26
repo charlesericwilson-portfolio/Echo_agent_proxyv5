@@ -1,8 +1,17 @@
 ## Feedback Welcome
 This project is still evolving. If you clone it, try it, or have ideas on how to improve it, **please** leave feedback or suggestions. Even small thoughts help a lot.
 
-# Echo_Tool_System
-Continuation of [Echo tmux agentv3](https://github.com/charlesericwilson-portfolio/Echo_tmux_agentv3) and adds proxy tool calls, output summarization, and database support. If your model can tell you what to type it can use any CLI tool installed with this framework. Easy to build just follow the instructions at the end and fill in the config.toml and your set. The JSON support requires some knowledge to define your tools but the logic is there. The raw text methods are ready to go. I have included a basic system prompt that instructs the model the tool format but you can make it your own.
+# Echo Tool System
+This is the active development version of the Echo project — a lightweight, local LLM agent tool system written in Rust.
+It is a continuation of the earlier [Echo tmux agentv3](https://github.com/charlesericwilson-portfolio/Echo_tmux_agentv3) and adds support for proxy-style tool calls, output summarization, and database logging.
+Key idea: If your model can already tell you what commands to type, it can use tools through this framework. No special fine-tuning is required.
+
+The raw text methods (COMMAND: and SESSION:) are ready to use out of the box.
+JSON tool support is also available, though defining tools requires some setup.
+A basic system prompt is included to teach the model the tool format, but you can replace it with your own.
+
+Current version: Rust v5 (previous Python proxy version was v4)
+The goal of this project is to keep the framework flexible so that the model’s capabilities are the main limitation — not artificial restrictions in the code.
 
 **Current Version:** Rust v5 (Python proxy was v4)
 

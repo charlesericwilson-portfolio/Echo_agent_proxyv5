@@ -2,7 +2,7 @@
 This project is still evolving. If you clone it, try it, or have ideas on how to improve it, **please** leave feedback or suggestions. Even small thoughts help a lot.
 
 # Echo_Tool_System
-Continuation of [Echo tmux agentv3](https://github.com/charlesericwilson-portfolio/Echo_tmux_agentv3) and adds proxy tool calls, output summarization, and database support. If your model can tell you what to type it can use any CLI tool installed with this framework. Easy to build just follow the instructions at the end and fill in the config.tom and your set. The JSON support requires some knowledge to define your tools but the logic is there. The raw text methods are ready to go. I have included a basic syatem prompt that instructs the model the tool format but you can make it your own.
+Continuation of [Echo tmux agentv3](https://github.com/charlesericwilson-portfolio/Echo_tmux_agentv3) and adds proxy tool calls, output summarization, and database support. If your model can tell you what to type it can use any CLI tool installed with this framework. Easy to build just follow the instructions at the end and fill in the config.toml and your set. The JSON support requires some knowledge to define your tools but the logic is there. The raw text methods are ready to go. I have included a basic system prompt that instructs the model the tool format but you can make it your own.
 
 **Current Version:** Rust v5 (Python proxy was v4)
 

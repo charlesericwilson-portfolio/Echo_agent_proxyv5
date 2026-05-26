@@ -316,7 +316,7 @@ async fn main() -> AnyhowResult<()> {
                     .map(|m| m["content"].as_str().unwrap_or("").len())
                     .sum();
 
-                if total_chars > 180_000 {
+                if total_chars > CONFIG.context.summarize_threshold {
                     summarize_context(&mut messages).await?;
                 }
                 break;

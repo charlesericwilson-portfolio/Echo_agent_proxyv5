@@ -209,7 +209,7 @@ async fn main() -> AnyhowResult<()> {
                         session_name, summary
                     );
 
-                    println!("{}Echo: Session summary:\n{}{}", LIGHT_BLUE, summary, RESET_COLOR);
+                    println!("{}[Tool Summary]:\n{}{}", YELLOW, summary, RESET_COLOR);
 
                     save_chat_log_entry(&home_dir, trimmed_input, &tool_content, "assistant").await.unwrap();
 
@@ -326,8 +326,8 @@ async fn main() -> AnyhowResult<()> {
             let payload = json!({
                 "model": CONFIG.endpoint.model,
                 "messages": &messages,
-                "temperature": 0.7,
-                "max_tokens": 2048
+                "temperature": CONFIG.endpoint.temperature,
+                "max_tokens": CONFIG.endpoint.max_tokens
             });
 
             let next = reqwest::Client::new()

@@ -21,10 +21,16 @@ pub struct PromptsConfig {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct SecurityConfig {
+    pub denylist: Vec<String>,     // ← This is new
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Config {
     pub endpoint: EndpointConfig,
     pub summarizer: SummarizerConfig,
     pub prompts: PromptsConfig,
+    pub security: SecurityConfig,
 }
 
 pub fn load_config(path: &str) -> Result<Config, Box<dyn std::error::Error>> {

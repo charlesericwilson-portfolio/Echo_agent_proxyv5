@@ -6,7 +6,7 @@ This is the active development version of the Echo project — a lightweight, lo
 It is a continuation of the earlier [Echo tmux agentv3](https://github.com/charlesericwilson-portfolio/Echo_tmux_agentv3) and adds support for proxy-style tool calls, output summarization, and database logging.
 Key idea: If your model can already tell you what commands to type, it can use tools through this framework. No special fine-tuning is required.
 
-The raw text methods (COMMAND: and SESSION:) are ready to use out of the box.
+The raw text methods (COMMAND: and SESSION:NAME) are ready to use out of the box.
 JSON tool support is also available, though defining tools requires some setup.
 A basic system prompt is included to teach the model the tool format, but you can replace it with your own.
 

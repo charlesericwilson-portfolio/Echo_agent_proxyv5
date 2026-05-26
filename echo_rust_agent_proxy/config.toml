@@ -10,3 +10,24 @@ url = "http://localhost:8082/v1/chat/completions"
 [prompts]
 main_system = "/home/eric/prompts/main_system.txt"
 summarizer = "/home/eric/prompts/summarizer.txt"
+
+[security]
+denylist = [
+    "rm -rf",
+    "rm -r /",
+    "> /dev/",
+    "dd if=/dev/zero",
+    "mkfs",
+    "format",
+    "shred",
+    "wipefs",
+    "fdisk",
+    "parted",
+    "sudo rm",
+    "rm --no-preserve-root",
+    ":(){ :|:& };:",
+    "fork bomb",
+    "> /dev/sda",
+    "chmod -R 777 /",
+    "chown -R",
+]

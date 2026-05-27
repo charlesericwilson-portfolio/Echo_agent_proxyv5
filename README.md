@@ -13,6 +13,31 @@ A basic system prompt is included to teach the model the tool format, but you ca
 Current version: Rust v5 (previous Python proxy version was v4)
 The goal of this project is to keep the framework flexible so that the model’s capabilities are the main limitation — not artificial restrictions in the code.
 
+### Quick Start
+
+ 1. Make sure your [llama.cpp](https://github.com/ggml-org/llama.cpp) servers are running
+```bash
+    - git clone https://github.com/ggml-org/llama.cpp
+    - cd llama.cpp
+    - cmake -B build
+    - cmake --build build --config Release -j$(nproc)
+```
+    - Main model: port 8080
+    - Summarizer (small model): port 8082
+ 2. Install dependencies
+```bash
+    - sudo apt install tmux
+    - sudo apt install cargo
+    - sudo apt install rustup
+```
+ 3. **Build and run the Rust version**
+```bash
+  cd [build directory]
+  cargo build --release
+  ./target/release/echo_rust_wrapper
+  ```
+ 4. Edit the config.toml file with endpoints, deny commands, and system prompt paths.
+
 ## Current Status (May 2026)
 
 - **Stable**: `COMMAND:` raw text tool execution
@@ -59,30 +84,6 @@ The agent can fluidly switch between raw text commands, persistent tmux sessions
 
 Persistent sessions with complex tools (full msfconsole workflows) are still being tuned. Context management and summarizer behavior continue to be refined. Database integration for all tool calls for auditing complete. Now supports Json function calling.
 
-### Quick Start
-
- 1. Make sure your [llama.cpp](https://github.com/ggml-org/llama.cpp) servers are running
-```bash
-    - git clone https://github.com/ggml-org/llama.cpp
-    - cd llama.cpp
-    - cmake -B build
-    - cmake --build build --config Release -j$(nproc)
-```
-    - Main model: port 8080
-    - Summarizer (small model): port 8082
- 2. Install dependencies
-```bash
-    - sudo apt install tmux
-    - sudo apt install cargo
-    - sudo apt install rustup
-```
- 3. **Build and run the Rust version**
-```bash
-  cd [build directory]
-  cargo build --release
-  ./target/release/echo_rust_wrapper
-  ```
- 4. Edit the config.toml file with endpoints, deny commands, and system prompt paths.
 ```mermaid
 flowchart TD
     A[User sends prompt] --> B[LLM / Echo]

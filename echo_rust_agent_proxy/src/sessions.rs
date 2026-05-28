@@ -9,7 +9,7 @@ use serde_json::json;
 use crate::summary::summarize_output;
 use crate::log::save_chat_log_entry;
 use crate::safety::is_command_safe;
-
+    // starts or reuses and existing session
 pub async fn start_or_reuse_session(
     home_dir: PathBuf,
     active_sessions: &Arc<Mutex<HashMap<String, (String, String)>>>,
@@ -43,7 +43,7 @@ pub async fn start_or_reuse_session(
 
     Ok(())
 }
-
+    // Extraction logic
 pub fn extract_session_command(response_text: &str) -> Option<(String, String)> {
     for line in response_text.lines() {
         let line = line.trim();
@@ -61,7 +61,7 @@ pub fn extract_session_command(response_text: &str) -> Option<(String, String)> 
     }
     None
 }
-
+    // Extract end command
 pub fn extract_end_command(response_text: &str) -> Option<String> {
     for line in response_text.lines() {
         let line = line.trim();
@@ -78,43 +78,54 @@ pub async fn execute_in_session(
     name: &str,
     command: String,
 ) -> Result<String> {
-    let marker_start = format!("===ECHO_START_{}===", chrono::Local::now().timestamp());
-    let marker_end = format!("===ECHO_END_{}===", chrono::Local::now().timestamp());
+    let timestamp = chrono::Local::now().timestamp();
+    let marker_start = format!("===ECHO_START_{}===", timestamp);
+    let marker_end = format!("===ECHO_END_{}===", timestamp);
 
-    // Send markers and command
+    // Send start marker
     Command::new("tmux")
         .args(["send-keys", "-t", name, &format!("echo '{}'", marker_start), "Enter"])
         .status()?;
 
+    // Send the actual command
     Command::new("tmux")
         .args(["send-keys", "-t", name, &command, "Enter"])
         .status()?;
 
+    // Send end marker
     Command::new("tmux")
         .args(["send-keys", "-t", name, &format!("echo '{}'", marker_end), "Enter"])
         .status()?;
 
-    // Wait a bit for command to run
-    tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
+    // Active polling loop (~300ms)
+    let start_time = std::time::Instant::now();
+    let timeout = std::time::Duration::from_secs(60);
 
-    // Capture the pane output
-    let output = Command::new("tmux")
-        .args(["capture-pane", "-p", "-t", name])
-        .output()?;
+    loop {
+        if start_time.elapsed() > timeout {
+            return Err(anyhow::anyhow!("Timeout waiting for command output in session '{}'", name));
+        }
 
-    let raw = String::from_utf8_lossy(&output.stdout).to_string();
+        // Capture current pane output
+        let output = Command::new("tmux")
+            .args(["capture-pane", "-p", "-S", "-10000", "-t", name])
+            .output()?;
 
-    // Extract only the new output between markers
-    let start_idx = raw.rfind(&marker_start).unwrap_or(0) + marker_start.len();
-    let end_idx = raw.rfind(&marker_end).unwrap_or(raw.len());
+        let raw = String::from_utf8_lossy(&output.stdout).to_string();
 
-    let clean_output = if start_idx < end_idx {
-        raw[start_idx..end_idx].trim().to_string()
-    } else {
-        raw.trim().to_string()
-    };
+        // Check if we have both markers and end is after start
+        if let (Some(start_idx), Some(end_idx)) = (raw.rfind(&marker_start), raw.rfind(&marker_end)) {
+            if end_idx > start_idx {
+                let clean_output = raw[start_idx + marker_start.len()..end_idx]
+                    .trim()
+                    .to_string();
+                return Ok(clean_output);
+            }
+        }
 
-    Ok(clean_output)
+        // Poll again in ~300ms
+        tokio::time::sleep(tokio::time::Duration::from_millis(300)).await;
+    }
 }
 
 pub async fn end_session(
@@ -144,7 +155,6 @@ pub async fn handle_session_command(
     session_name: &str,
     command: Option<&str>,
 ) -> Result<()> {
-    //println!("{}Echo: {}", crate::agent::LIGHT_BLUE, current_response.trim());
     if let Some(cmd) = command {
         if let Err(e) = is_command_safe(cmd, &agent.config) {
             println!("{}Safety block: {}{}", crate::agent::YELLOW, e, crate::agent::RESET_COLOR);

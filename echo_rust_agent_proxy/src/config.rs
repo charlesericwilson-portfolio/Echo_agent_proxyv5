@@ -15,12 +15,11 @@ pub struct PathsConfig {
     pub context_file: String,
     pub database: String,
 }
-
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, Clone)]
 pub struct WebSearchConfig {
     pub url: String,
     #[serde(default)]
-    #[allow(dead_code)]
     pub api_key: Option<String>,
 }
 

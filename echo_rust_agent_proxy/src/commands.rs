@@ -3,7 +3,7 @@ use anyhow::Result;
 use serde_json::json;
 use crate::log::save_chat_log_entry;
 use crate::safety::is_command_safe;
-
+    // Extract command
 pub fn extract_command(response_text: &str) -> Option<String> {
     for line in response_text.lines() {
         let line = line.trim();
@@ -13,12 +13,12 @@ pub fn extract_command(response_text: &str) -> Option<String> {
     }
     None
 }
+    // Execute command
 pub async fn handle_command(
     agent: &mut crate::agent::EchoAgent,
     user_input: &str,
     command: &str,
 ) -> Result<()> {
-    //println!("{}Echo: Executing command: {}{}", crate::agent::LIGHT_BLUE, command.trim(), crate::agent::RESET_COLOR);
     if let Err(e) = is_command_safe(command, &agent.config) {
         println!("{}Safety block: {}{}", crate::agent::YELLOW, e, crate::agent::RESET_COLOR);
         save_chat_log_entry(&agent.home_dir, user_input, &format!("Blocked: {}", e), "assistant").await?;

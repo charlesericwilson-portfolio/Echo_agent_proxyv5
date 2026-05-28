@@ -70,7 +70,8 @@ Echo works with **any server or API that speaks the OpenAI Chat Completions form
 
 - **Stable**: `COMMAND:` raw text tool execution
 - **Functional**: Persistent `SESSION:NAME` tool execution via tmux with smart output capture
-- **New (In Progress)**: JSON tool calling support (first working tool: `get_current_datetime`)
+- **Stable** multi-line command and file writing support with xml tags <COMMAND>command here</COMMAND>. You can change the flag name in the code before compile right now but will eventually be going into config.toml
+- **New (In Progress)**: JSON tool calling support
 - Refactored to use config.toml to set endpoints and set your system prompts in text files for the main model and the summarizer model without recompiling.
 - Context auto-summarization 
 - SQLite database logging for all tool calls and summaries

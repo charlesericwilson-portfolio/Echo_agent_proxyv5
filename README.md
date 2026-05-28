@@ -15,6 +15,34 @@ The goal of this project is to keep the framework flexible so that the model’s
 
 ### Quick Start
 
+## Supported Backends
+
+Echo works with **any server or API that speaks the OpenAI Chat Completions format**. You are **not** locked into llama.cpp.
+
+### Local Servers (Recommended)
+| Backend            | Notes                              | Recommendation      |
+|--------------------|------------------------------------|---------------------|
+| **llama.cpp**      | Use `--api` flag                   | Best overall        |
+| **vLLM**           | High performance                   | Great for speed     |
+| **Ollama**         | Built-in OpenAI compatibility      | Easiest to start    |
+| **LM Studio**      | Has built-in OpenAI server         | Very beginner friendly |
+| **TabbyAPI**       | Excellent with exllama/exllamav2   | Strong choice       |
+| **Aphrodite**      | Good performance                   | Solid alternative   |
+| **SGLang**         | Modern inference engine            | Good performance    |
+
+### Cloud APIs
+- **OpenAI**
+- **Groq**
+- **Together.ai**
+- **Fireworks.ai**
+- **DeepInfra**
+- **OpenRouter**
+- **Mistral** (OpenAI compatible mode)
+- Most other OpenAI-compatible providers
+
+> **Note:** Anthropic, Google Gemini, and raw Hugging Face endpoints are **not** supported at this time. In the process of adding a selector to pick between protocols.
+
+
  1. Make sure your [llama.cpp](https://github.com/ggml-org/llama.cpp) servers are running
 ```bash
     - git clone https://github.com/ggml-org/llama.cpp

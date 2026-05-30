@@ -3,6 +3,7 @@ use anyhow::Result;
 use chrono::Local;
 use crate::log::save_chat_log_entry;
 use scraper::{Html, Selector};
+use std::time::Duration;
 
 pub async fn handle_json_tool_call_str(tool_call: &str, _web_search_url: Option<&str>, enabled_tools: &[String],) -> Result<String> {
     let parsed: Value = serde_json::from_str(tool_call)
@@ -123,6 +124,7 @@ pub async fn web_search(query: &str) -> Result<String, anyhow::Error> {
 pub async fn browse_page(url: &str, max_chars: Option<usize>) -> Result<String, anyhow::Error> {
     let client = reqwest::Client::builder()
         .user_agent("Mozilla/5.0 (compatible; EchoAgent/1.0)")
+        .timeout(Duration::from_secs(30))
         .build()?;
 
     let response = client.get(url).send().await?;

@@ -2,8 +2,9 @@ use serde_json::Value;
 use anyhow::Result;
 use chrono::Local;
 use crate::log::save_chat_log_entry;
+use scraper::{Html, Selector};
 
-pub async fn handle_json_tool_call_str(tool_call: &str, web_search_url: Option<&str>, enabled_tools: &[String],) -> Result<String> {
+pub async fn handle_json_tool_call_str(tool_call: &str, _web_search_url: Option<&str>, enabled_tools: &[String],) -> Result<String> {
     let parsed: Value = serde_json::from_str(tool_call)
         .map_err(|e| anyhow::anyhow!("Failed to parse JSON tool call: {}", e))?;
 
@@ -41,17 +42,117 @@ pub async fn handle_json_tool_call_str(tool_call: &str, web_search_url: Option<&
         }
 
         "web_search" => {
-            let query = arguments["query"].as_str().unwrap_or("No query provided");
+    let query = arguments["query"]
+        .as_str()
+        .unwrap_or("No query provided");
 
-            if let Some(url) = web_search_url {
-                Ok(format!("Web search results for '{}':\n[Would call: {}?q={}]", query, url, query))
-            } else {
-                Ok(format!("Web search not configured. Query was: {}", query))
-            }
-        }
+    match web_search(query).await {
+        Ok(results) => Ok(format!("Web search results for '{}':\n\n{}", query, results)),
+        Err(e) => Ok(format!("Web search failed: {}", e)),
+    }
+}
+
+    "browse_page" => {
+    let url = arguments["url"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("Missing 'url' argument for browse_page"))?;
+
+    let max_chars = arguments["max_chars"].as_u64().map(|v| v as usize);
+
+    match browse_page(url, max_chars).await {
+        Ok(content) => Ok(format!(
+            "Content from {}:\n\n{}",
+            url, content
+        )),
+        Err(e) => Ok(format!("Failed to browse page: {}", e)),
+    }
+}
 
         _ => Err(anyhow::anyhow!("Unknown JSON tool: {}", tool_name)),
     }
+}
+
+pub async fn web_search(query: &str) -> Result<String, anyhow::Error> {
+    let url = format!(
+        "https://html.duckduckgo.com/html/?q={}",
+        urlencoding::encode(query)
+    );
+
+    let client = reqwest::Client::new();
+    let response = client
+        .get(&url)
+        .header("User-Agent", "Mozilla/5.0 (compatible; EchoAgent/1.0)")
+        .send()
+        .await?;
+
+    let html = response.text().await?;
+    let document = Html::parse_document(&html);
+
+    let result_selector = Selector::parse(".result__a").unwrap();
+    let snippet_selector = Selector::parse(".result__snippet").unwrap();
+
+    let mut results = Vec::new();
+
+    for (i, element) in document.select(&result_selector).take(5).enumerate() {
+        let title = element.text().collect::<String>();
+        let link = element.value().attr("href").unwrap_or("").to_string();
+
+        // Try to get snippet
+        let snippet = document
+            .select(&snippet_selector)
+            .nth(i)
+            .map(|s| s.text().collect::<String>())
+            .unwrap_or_default();
+
+        results.push(format!(
+            "{}. {}\n   {}\n   {}",
+            i + 1,
+            title.trim(),
+            link,
+            snippet.trim()
+        ));
+    }
+
+    if results.is_empty() {
+        Ok("No search results found.".to_string())
+    } else {
+        Ok(results.join("\n\n"))
+    }
+}
+
+pub async fn browse_page(url: &str, max_chars: Option<usize>) -> Result<String, anyhow::Error> {
+    let client = reqwest::Client::builder()
+        .user_agent("Mozilla/5.0 (compatible; EchoAgent/1.0)")
+        .build()?;
+
+    let response = client.get(url).send().await?;
+    let html = response.text().await?;
+
+    let document = Html::parse_document(&html);
+
+    // Try to get the main content
+    let body_selector = Selector::parse("body").unwrap();
+    let text_content = document
+        .select(&body_selector)
+        .next()
+        .map(|body| {
+            body.text()
+                .collect::<Vec<_>>()
+                .join(" ")
+                .split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ")
+        })
+        .unwrap_or_else(|| "Could not extract page content.".to_string());
+
+    let max = max_chars.unwrap_or(8000); // default limit
+    let truncated = if text_content.len() > max {
+        format!("{}...\n\n[Content truncated. Page was very long.]", &text_content[..max])
+    } else {
+        text_content
+    };
+
+    Ok(truncated)
 }
 
 pub async fn handle_json_tool(
